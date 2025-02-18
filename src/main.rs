@@ -1,56 +1,65 @@
-use std::{collections::HashSet, io};
+use std::io;
 
 
 fn main() {
+    println!("Simple Calculator!\n");
 
-    let _supported_operations = HashSet::from(["+", "-", "*", ":"]);
-    println!("Simple calculator!\n");
-    println!("Supported operations: {:?}\n", _supported_operations);
+    let number_1 = get_number_input("Please enter first number:");
 
-    let number_1_input = get_user_number_input("enter number");
+    let operation = get_operation_input("Please enter operation:");
 
-    let operation = get_user_operation_input(format!("enter operation ({:?}):", _supported_operations));
-
-    if !_supported_operations.contains(operation.as_str()){
-        print!("Unsupported operation!");
-        return;
-    }
-
-    let number_2_input = get_user_number_input("enter another number:");
+    let number_2 = get_number_input("Please enter second number:");
 
     let result = match operation.as_str() {
-        "+" => number_1_input + number_2_input,
-        "-" => number_1_input - number_2_input,
-        "*" => number_1_input * number_2_input,
-        ":" => number_1_input / number_2_input,
+        "+" => number_1 + number_2,
+        "-" => number_1 - number_2,
+        "*" => number_1 * number_2,
+        ":" => number_1 / number_2,
         _ => {
-            println!("Unknown operation: {operation}");
+            println!("Invalid operation!");
             return;
         }
     };
 
-    println!("Result: {result}");
-
+    print!("Result: {result}\n");
 }
 
-fn get_user_number_input(prompt: &str) -> i32 {
-    let mut input = String::new();
+fn get_number_input(prompt: &str) -> i32 {
+    let number: i32 = loop {
+        println!("{prompt}");
 
-    println!("{}:", prompt);
+        let mut number_input = String::new();
 
-    io::stdin().read_line(&mut input).expect("Faild to read input!");
+        io::stdin().read_line(&mut number_input).expect("Failed to read line!");
 
-    let number: i32 = input.trim().parse().expect("Not a valid integer!");
+        match number_input.trim().parse::<i32>() {
+            Ok(num) => break num,
+            _ => println!("Invalid number!")
+        }
+    };
 
     return number;
 }
 
-fn get_user_operation_input(prompt: String) -> String {
-    let mut input = String::new();
+fn get_operation_input(prompt: &str) -> String {
+    let valid_operations = ["+", "-", "*", ":"];
 
-    println!("{}", prompt);
+    let operation: String = loop {
+        println!("{prompt}");
+        println!("{:?}", valid_operations);
 
-    io::stdin().read_line(&mut input).expect("Failed to read operation input!");
+        let mut op = String::new();
 
-    return input.trim().to_string();
+        io::stdin().read_line(&mut op).expect("Failed to read line!");
+
+        let op = op.trim();
+
+        if valid_operations.contains(&op) {
+            break op.to_string();
+        } else {
+            println!("Invalid operation!")
+        }
+    };
+    
+    return operation;
 }
